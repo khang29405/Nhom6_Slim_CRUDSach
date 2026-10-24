@@ -1,0 +1,1 @@
+-- schema.sql - Script tạo database và các bảng (Sơn)

@@ -1,0 +1,1 @@
+-- seed.sql - Dữ liệu mẫu cho loại sách và đầu sách (Sơn)
