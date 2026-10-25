@@ -11,7 +11,7 @@ class Book
         public ?string $mo_ta = null,
         public ?string $hinh_anh = null,
         public ?int $so_trang = null,
-        public ?float $gia_bia = null,
+        public float $gia_bia = 0,
         public int $so_luong = 0,
         public string $ma_loai = '',
     ) {}
