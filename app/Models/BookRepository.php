@@ -31,9 +31,41 @@ class BookRepository
 
 
     // ===== Cang: sửa sách và xem chi tiết =====
-    // Cần viết 2 hàm:
-    //   getById(int $id): ?array          -> trả 1 cuốn sách (kèm ten_loai, JOIN loai_sach), không có thì trả null
-    //   update(int $id, array $d): void   -> cập nhật các cột của sách theo $id
+        // Lấy 1 cuốn sách theo mã (kèm ten_loai), không có thì trả null
+    public function getById(int $id): ?array
+    {
+        $sql = "SELECT s.*, l.ten_loai
+                FROM sach s
+                JOIN loai_sach l ON l.ma_loai = s.ma_loai
+                WHERE s.ma_dau_sach = :id";
+        $stmt = $this->pdo->prepare($sql);
+        $stmt->execute(['id' => $id]);
+        $row = $stmt->fetch();
+        return $row === false ? null : $row;
+    }
+
+    // Cập nhật các cột của sách theo mã
+    public function update(int $id, array $d): void
+    {
+        $sql = "UPDATE sach
+                SET nhan_de = :nhan_de, tac_gia = :tac_gia, nha_xuat_ban = :nha_xuat_ban,
+                    mo_ta = :mo_ta, hinh_anh = :hinh_anh, so_trang = :so_trang,
+                    gia_bia = :gia_bia, so_luong = :so_luong, ma_loai = :ma_loai
+                WHERE ma_dau_sach = :id";
+        $stmt = $this->pdo->prepare($sql);
+        $stmt->execute([
+            'nhan_de'      => trim($d['nhan_de']),
+            'tac_gia'      => trim($d['tac_gia']),
+            'nha_xuat_ban' => $d['nha_xuat_ban'] ?? null,
+            'mo_ta'        => $d['mo_ta'] ?? null,
+            'hinh_anh'     => $d['hinh_anh'] ?? null,
+            'so_trang'     => $d['so_trang'] ?? null,
+            'gia_bia'      => $d['gia_bia'],
+            'so_luong'     => $d['so_luong'] ?? 0,
+            'ma_loai'      => trim($d['ma_loai']),
+            'id'           => $id,
+        ]);
+    }
     // ===== HẾT phần Cang =====
 
 
