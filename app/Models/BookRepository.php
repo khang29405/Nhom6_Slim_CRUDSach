@@ -49,8 +49,29 @@ class BookRepository
 
 
     // ===== Minh Tân: danh sách và tìm kiếm =====
-    // Cần viết 2 hàm:
-    //   getAll(): array                   -> trả tất cả sách (kèm ten_loai, JOIN loai_sach), mới nhất lên đầu
-    //   search(string $keyword): array    -> như getAll nhưng chỉ lấy sách có nhan_de, tac_gia hoặc ten_loai chứa $keyword
+        public function getAll(): array
+    {
+        $sql = "SELECT s.ma_dau_sach, s.nhan_de, s.tac_gia, s.nha_xuat_ban, s.mo_ta, s.hinh_anh,
+                       s.so_trang, s.gia_bia, s.so_luong, s.ma_loai, l.ten_loai
+                FROM sach s
+                INNER JOIN loai_sach l ON l.ma_loai = s.ma_loai
+                ORDER BY s.ma_dau_sach DESC";
+        return $this->pdo->query($sql)->fetchAll();
+    }
+
+    public function search(string $keyword): array
+    {
+        $sql = "SELECT s.ma_dau_sach, s.nhan_de, s.tac_gia, s.nha_xuat_ban, s.mo_ta, s.hinh_anh,
+                       s.so_trang, s.gia_bia, s.so_luong, s.ma_loai, l.ten_loai
+                FROM sach s
+                INNER JOIN loai_sach l ON l.ma_loai = s.ma_loai
+                WHERE s.nhan_de LIKE :k1 OR s.tac_gia LIKE :k2 OR l.ten_loai LIKE :k3
+                ORDER BY s.ma_dau_sach DESC";
+        // Escape các ký tự đặc biệt của LIKE (% và _) để tìm đúng nghĩa đen
+        $like = '%' . addcslashes(trim($keyword), '\\%_') . '%';
+        $stmt = $this->pdo->prepare($sql);
+        $stmt->execute(['k1' => $like, 'k2' => $like, 'k3' => $like]);
+        return $stmt->fetchAll();
+    }
     // ===== HẾT phần Minh Tân =====
 }
