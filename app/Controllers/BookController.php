@@ -13,7 +13,12 @@ class BookController
     // GET /api/books (?q=) -> Minh Tân
     public function index(Request $request, Response $response): Response
     {
-        return $this->json($response, ['error' => 'Chưa làm'], 501);
+        $q = $request->getQueryParams()['q'] ?? '';
+        $q = is_string($q) ? trim($q) : '';
+
+        $books = $q === '' ? $this->books->getAll() : $this->books->search($q);
+
+        return $this->json($response, ['data' => $books]);
     }
 
     // GET /api/books/{id} -> Cang
