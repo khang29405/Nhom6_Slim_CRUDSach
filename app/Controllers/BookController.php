@@ -22,9 +22,13 @@ class BookController
     }
 
     // GET /api/books/{id} -> Cang
-    public function show(Request $request, Response $response, array $args): Response
+        public function show(Request $request, Response $response, array $args): Response
     {
-        return $this->json($response, ['error' => 'Chưa làm'], 501);
+        $book = $this->books->getById((int) $args['id']);
+        if ($book === null) {
+            return $this->json($response, ['error' => 'Không tìm thấy sách'], 404);
+        }
+        return $this->json($response, ['data' => $book]);
     }
 
     // GET /api/categories -> Sơn
@@ -54,10 +58,28 @@ class BookController
     }
 
     // PUT /api/books/{id} -> Cang
-    // (dùng lại $this->normalize() và $this->validate() ở bên dưới)
-    public function update(Request $request, Response $response, array $args): Response
+        public function update(Request $request, Response $response, array $args): Response
     {
-        return $this->json($response, ['error' => 'Chưa làm'], 501);
+        $id = (int) $args['id'];
+        if ($this->books->getById($id) === null) {
+            return $this->json($response, ['error' => 'Không tìm thấy sách'], 404);
+        }
+
+        $data   = $this->normalize((array) $request->getParsedBody());
+        $errors = $this->validate($data);
+        if ($errors) {
+            return $this->json($response, ['errors' => $errors], 422);
+        }
+        try {
+            $this->books->update($id, $data);
+        } catch (\PDOException $e) {
+            // 23000 = vi phạm khóa ngoại: mã loại không tồn tại trong bảng loai_sach
+            if ($e->getCode() === '23000') {
+                return $this->json($response, ['errors' => ['ma_loai' => 'Mã loại không tồn tại']], 422);
+            }
+            throw $e;
+        }
+        return $this->json($response, ['message' => 'Cập nhật sách thành công']);
     }
 
     // DELETE /api/books/{id} -> Sơn
