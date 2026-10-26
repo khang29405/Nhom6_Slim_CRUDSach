@@ -1,1 +1,86 @@
 <!-- form.html - Form thêm / sửa sách dùng chung (Duy Tân) -->
+<!-- form.html - Form thêm / sửa sách dùng chung (Duy Tân) -->
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Thêm / sửa sách</title>
+    <link rel="stylesheet" href="/book-slim/public/assets/css/style.css">
+</head>
+<body>
+    <div id="header"></div>
+
+    <main class="container">
+        <h1 class="page-title" id="page-title">Thêm sách</h1>
+
+        <!-- Thông báo: đang tải, thành công, lỗi (form.js tự bật/tắt) -->
+        <div id="message" class="alert hidden" role="alert"></div>
+
+        <div class="card">
+            <!-- Form ẩn cho đến khi tải xong loại sách (và dữ liệu sách khi sửa) -->
+            <form id="book-form" class="form hidden" novalidate>
+                <p class="text-muted">Các ô có dấu * là bắt buộc.</p>
+
+                <div class="form-group">
+                    <label for="nhan_de">Nhan đề *</label>
+                    <input type="text" id="nhan_de" name="nhan_de">
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="tac_gia">Tác giả *</label>
+                        <input type="text" id="tac_gia" name="tac_gia">
+                    </div>
+                    <div class="form-group">
+                        <label for="nha_xuat_ban">Nhà xuất bản</label>
+                        <input type="text" id="nha_xuat_ban" name="nha_xuat_ban">
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="ma_loai">Loại sách *</label>
+                        <select id="ma_loai" name="ma_loai">
+                            <option value="">-- Chọn loại sách --</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="hinh_anh">Đường dẫn hình ảnh</label>
+                        <input type="text" id="hinh_anh" name="hinh_anh">
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="gia_bia">Giá bìa *</label>
+                        <input type="number" id="gia_bia" name="gia_bia" min="0" step="any">
+                    </div>
+                    <div class="form-group">
+                        <label for="so_luong">Số lượng</label>
+                        <input type="number" id="so_luong" name="so_luong" min="0" step="1" placeholder="0">
+                    </div>
+                    <div class="form-group">
+                        <label for="so_trang">Số trang</label>
+                        <input type="number" id="so_trang" name="so_trang" min="1" step="1">
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="mo_ta">Mô tả</label>
+                    <textarea id="mo_ta" name="mo_ta"></textarea>
+                </div>
+
+                <div class="form-actions">
+                    <button type="submit" class="btn btn-primary" id="btn-save">Lưu</button>
+                    <a class="btn btn-secondary" id="btn-cancel" href="/book-slim/public/books">Hủy</a>
+                </div>
+            </form>
+        </div>
+    </main>
+
+      <script>history.replaceState(null, '', '/book-slim/public/books/create');</script>
+   <script src="/book-slim/public/assets/js/api.js"></script>
+   <script src="/book-slim/public/assets/js/form.js"></script>
+</body>
+</html>
