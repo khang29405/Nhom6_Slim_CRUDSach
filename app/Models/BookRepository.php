@@ -72,9 +72,20 @@ class BookRepository
 
 
     // ===== Sơn: xóa sách và danh sách loại sách =====
-    // Cần viết 2 hàm:
-    //   delete(int $id): bool             -> xóa sách theo $id, trả true nếu có xóa được dòng nào
-    //   getCategories(): array            -> trả tất cả loại sách (ma_loai, ten_loai), sắp theo ten_loai
+        // Xóa sách theo mã, trả true nếu có xóa được dòng nào
+    public function delete(int $id): bool
+    {
+        $stmt = $this->pdo->prepare("DELETE FROM sach WHERE ma_dau_sach = :id");
+        $stmt->execute(['id' => $id]);
+        return $stmt->rowCount() > 0;
+    }
+
+    // Lấy tất cả loại sách, sắp theo tên loại
+    public function getCategories(): array
+    {
+        $sql = "SELECT ma_loai, ten_loai FROM loai_sach ORDER BY ten_loai";
+        return $this->pdo->query($sql)->fetchAll();
+    }
     // ===== HẾT phần Sơn =====
 
 

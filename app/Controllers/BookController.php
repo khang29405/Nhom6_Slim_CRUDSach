@@ -34,7 +34,7 @@ class BookController
     // GET /api/categories -> Sơn
     public function categories(Request $request, Response $response): Response
     {
-        return $this->json($response, ['error' => 'Chưa làm'], 501);
+            return $this->json($response, ['data' => $this->books->getCategories()]);
     }
 
     // POST /api/books -> Khang
@@ -85,7 +85,19 @@ class BookController
     // DELETE /api/books/{id} -> Sơn
     public function delete(Request $request, Response $response, array $args): Response
     {
-        return $this->json($response, ['error' => 'Chưa làm'], 501);
+        try {
+            $deleted = $this->books->delete((int) $args['id']);
+        } catch (\PDOException $e) {
+            // 23000 = vi phạm khóa ngoại: sách đang nằm trong chi tiết giỏ hàng (bảng chua)
+            if ($e->getCode() === '23000') {
+                return $this->json($response, ['error' => 'Không thể xóa sách đã có trong giỏ hàng'], 409);
+            }
+            throw $e;
+        }
+        if (!$deleted) {
+            return $this->json($response, ['error' => 'Không tìm thấy sách'], 404);
+        }
+        return $this->json($response, ['message' => 'Xóa sách thành công']);
     }
 
     // Đổi chuỗi rỗng thành null cho các cột cho phép NULL; số lượng mặc định 0
