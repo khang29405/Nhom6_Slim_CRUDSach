@@ -1,6 +1,11 @@
 /* style.css - Khung giao diện chung (Thông) */
 /* style.css - Khung giao diện chung (Thông) */
 
+/* Bộ icon Font Awesome 6 (bản miễn phí). @import bắt buộc đứng trước mọi quy tắc CSS khác.
+   Icon được gắn bằng CSS ở phần "GIAO DIỆN SINH ĐỘNG" cuối file, không phải sửa HTML hay JS.
+   Cần có mạng để tải; mất mạng thì nút vẫn hiện chữ bình thường, chỉ thiếu icon. */
+@import url("https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css");
+
 /*
    KHUNG TRANG CHUNG (mỗi trang HTML dùng đúng khung này):
 
@@ -412,5 +417,291 @@ textarea:focus {
 
     .form-actions .btn {
         flex: 1 1 auto;
+    }
+}
+
+
+/* =====================================================================
+   GIAO DIỆN SINH ĐỘNG: logo, icon Font Awesome, hiệu ứng chuyển động (Thiện)
+   Giữ nguyên bảng màu ở :root phía trên, chỉ viết thêm ở cuối file và không sửa
+   quy tắc cũ (quy tắc viết sau đè quy tắc viết trước). Muốn bỏ thì xóa cả phần này
+   và dòng @import ở đầu file.
+   Icon gắn bằng ::before / ::after với font Font Awesome, nên khi JS đổi chữ trên
+   nút (textContent) icon vẫn còn. Mã icon tra tại https://fontawesome.com/icons
+   ===================================================================== */
+
+/* ===== Cách gắn icon: mỗi phần tử chỉ cần đặt biến --fa là mã icon ===== */
+.brand::before,
+.nav-link::before,
+#search-form button[type="submit"]::before,
+#btn-clear::before,
+#book-list .btn-danger::before,
+#btn-prev::before,
+#btn-next::after,
+#btn-save::before,
+#btn-cancel::before,
+#btn-edit::before,
+.detail-actions .btn-secondary::before,
+#detail-error .btn::before,
+.app-modal-actions .btn-danger::before,
+.alert-success::before,
+.alert-error::before,
+.alert-info::before,
+.badge-warning::before,
+.empty::before {
+    content: var(--fa);
+    font-family: "Font Awesome 6 Free";
+    font-weight: 900;
+    font-style: normal;
+    line-height: 1;
+    -webkit-font-smoothing: antialiased;
+    display: inline-block;
+}
+
+.brand                                    { --fa: "\f518"; }  /* book-open */
+.nav-link[href$="/books"]                 { --fa: "\f03a"; }  /* list */
+.nav-link[href$="/books/create"]          { --fa: "\2b"; }    /* plus */
+#search-form button[type="submit"]        { --fa: "\f002"; }  /* magnifying-glass */
+#btn-clear                                { --fa: "\f00d"; }  /* xmark */
+#book-list .btn-danger,
+.app-modal-actions .btn-danger            { --fa: "\f2ed"; }  /* trash-can */
+#btn-prev                                 { --fa: "\f053"; }  /* chevron-left */
+#btn-next                                 { --fa: "\f054"; }  /* chevron-right */
+#btn-save                                 { --fa: "\f0c7"; }  /* floppy-disk */
+#btn-cancel                               { --fa: "\f00d"; }  /* xmark */
+#btn-edit                                 { --fa: "\f044"; }  /* pen-to-square */
+.detail-actions .btn-secondary,
+#detail-error .btn                        { --fa: "\f060"; }  /* arrow-left */
+.alert-success                            { --fa: "\f058"; }  /* circle-check */
+.alert-error                              { --fa: "\f06a"; }  /* circle-exclamation */
+.alert-info                               { --fa: "\f05a"; }  /* circle-info */
+.badge-warning                            { --fa: "\f071"; }  /* triangle-exclamation */
+.empty                                    { --fa: "\f02d"; }  /* book */
+
+/* ===== Hiệu ứng dùng chung ===== */
+@keyframes fade-up {
+    from { opacity: 0; transform: translateY(10px); }
+    to   { opacity: 1; transform: none; }
+}
+
+@keyframes fade-in {
+    from { opacity: 0; }
+    to   { opacity: 1; }
+}
+
+@keyframes float {
+    0%, 100% { transform: translateY(0); }
+    50%      { transform: translateY(-6px); }
+}
+
+/* Nội dung trang trượt nhẹ lên khi mở trang */
+main.container {
+    animation: fade-up 0.4s ease both;
+}
+
+/* ===== Thanh menu: vạch màu chính phía trên, logo bên trái ===== */
+.site-header {
+    border-top: 3px solid var(--color-primary);
+}
+
+.brand {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+}
+
+/* Logo: ô vuông bo góc màu xanh có hình quyển sách mở */
+.brand::before {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 38px;
+    height: 38px;
+    border-radius: 10px;
+    background: linear-gradient(135deg, var(--color-primary), var(--color-primary-dark));
+    color: #ffffff;
+    font-size: 1.05rem;
+    box-shadow: 0 4px 10px rgba(37, 99, 235, 0.35);
+    transition: transform 0.25s;
+}
+
+.brand:hover::before {
+    transform: rotate(-10deg) scale(1.08);
+}
+
+.nav-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    transition: background-color 0.15s, color 0.15s, box-shadow 0.15s;
+}
+
+.nav-link.active {
+    box-shadow: 0 3px 10px rgba(37, 99, 235, 0.3);
+}
+
+/* ===== Nút: có icon, nổi lên khi rê chuột, lún xuống khi bấm ===== */
+.btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 7px;
+    font-weight: 500;
+    transition: transform 0.15s, box-shadow 0.15s, background-color 0.15s, border-color 0.15s;
+}
+
+.btn::before,
+.btn::after {
+    transition: transform 0.2s;
+}
+
+.btn:hover:not(:disabled) {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 14px rgba(15, 23, 42, 0.12);
+}
+
+.btn-primary:hover:not(:disabled) {
+    box-shadow: 0 6px 16px rgba(37, 99, 235, 0.35);
+}
+
+.btn-danger:hover:not(:disabled) {
+    box-shadow: 0 6px 16px rgba(220, 38, 38, 0.35);
+}
+
+.btn:active:not(:disabled) {
+    transform: translateY(0);
+    box-shadow: none;
+}
+
+.btn:focus-visible {
+    outline: 3px solid rgba(37, 99, 235, 0.4);
+    outline-offset: 2px;
+}
+
+/* Icon nhúc nhích theo ý nghĩa của nút khi rê chuột */
+#search-form button[type="submit"]:hover::before { transform: scale(1.2); }
+#btn-prev:hover:not(:disabled)::before,
+.detail-actions .btn-secondary:hover::before,
+#detail-error .btn:hover::before                 { transform: translateX(-3px); }
+#btn-next:hover:not(:disabled)::after            { transform: translateX(3px); }
+#book-list .btn-danger:hover::before,
+.app-modal-actions .btn-danger:hover::before     { transform: rotate(-12deg); }
+#btn-edit:hover::before                          { transform: rotate(-12deg); }
+#btn-clear:hover::before,
+#btn-cancel:hover::before                        { transform: rotate(90deg); }
+
+/* Nút Xóa trong bảng gọn hơn */
+#book-list .btn-danger {
+    padding: 6px 12px;
+    font-size: 0.9rem;
+}
+
+/* ===== Khối nội dung, bảng ===== */
+.card,
+.table-wrap {
+    border-radius: 10px;
+    transition: box-shadow 0.2s;
+}
+
+.card:hover,
+.table-wrap:hover {
+    box-shadow: 0 8px 24px rgba(15, 23, 42, 0.08);
+}
+
+/* Các dòng sách hiện dần lần lượt mỗi khi tải danh sách, tìm kiếm hoặc đổi trang */
+.table tbody tr {
+    animation: fade-in 0.35s ease both;
+}
+.table tbody tr:nth-child(2)  { animation-delay: 0.03s; }
+.table tbody tr:nth-child(3)  { animation-delay: 0.06s; }
+.table tbody tr:nth-child(4)  { animation-delay: 0.09s; }
+.table tbody tr:nth-child(5)  { animation-delay: 0.12s; }
+.table tbody tr:nth-child(6)  { animation-delay: 0.15s; }
+.table tbody tr:nth-child(7)  { animation-delay: 0.18s; }
+.table tbody tr:nth-child(8)  { animation-delay: 0.21s; }
+.table tbody tr:nth-child(9)  { animation-delay: 0.24s; }
+.table tbody tr:nth-child(10) { animation-delay: 0.27s; }
+
+.table td {
+    transition: background-color 0.15s;
+}
+
+/* ===== Ô nhập: vòng sáng mềm thay cho viền cứng khi đang nhập ===== */
+input[type="text"],
+input[type="search"],
+input[type="number"],
+input[type="url"],
+select,
+textarea {
+    transition: border-color 0.15s, box-shadow 0.15s;
+}
+
+input:focus,
+select:focus,
+textarea:focus {
+    outline: none;
+    box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.15);
+}
+
+/* Ghi kèm tên thẻ để mạnh hơn input[type="text"] ở trên, nếu không viền đỏ của ô lỗi bị đè mất */
+input.input-error,
+select.input-error,
+textarea.input-error {
+    border-color: var(--color-danger);
+}
+
+input.input-error:focus,
+select.input-error:focus,
+textarea.input-error:focus {
+    box-shadow: 0 0 0 4px rgba(220, 38, 38, 0.15);
+}
+
+/* ===== Thông báo: có icon, vạch đậm bên trái, trượt vào khi hiện ===== */
+.alert {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    border-left-width: 4px;
+    animation: fade-up 0.3s ease both;
+}
+
+.alert::before {
+    margin-top: 0.2em;
+}
+
+/* ===== Nhãn "Hết hàng" có icon cảnh báo ===== */
+.badge-warning {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+}
+
+.badge-warning::before {
+    font-size: 0.8em;
+}
+
+/* ===== Khi không có dữ liệu: quyển sách lớn bồng bềnh ===== */
+.empty::before {
+    display: block;
+    margin-bottom: 12px;
+    font-size: 2.6rem;
+    color: var(--color-primary);
+    opacity: 0.75;
+    animation: float 2.6s ease-in-out infinite;
+}
+
+/* Người dùng chọn giảm chuyển động trong hệ điều hành thì tắt hiệu ứng */
+@media (prefers-reduced-motion: reduce) {
+    main.container,
+    .alert,
+    .table tbody tr,
+    .empty::before {
+        animation: none;
+    }
+    .btn:hover:not(:disabled),
+    .btn:hover::before,
+    .btn:hover::after,
+    .brand:hover::before {
+        transform: none;
     }
 }
