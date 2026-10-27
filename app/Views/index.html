@@ -1,1 +1,111 @@
 <!-- index.html - Trang danh sách sách và ô tìm kiếm (Thiện) -->
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Danh sách sách</title>
+    <link rel="stylesheet" href="/book-slim/public/assets/css/style.css">
+
+    <!-- Giao diện riêng của trang danh sách (đặt ở đây để không phải sửa style.css dùng chung) -->
+    <style>
+        /* Dòng sách: rê vào đổi màu nhẹ và đổi con trỏ, bấm vào để xem chi tiết */
+        #book-list tr.book-row {
+            cursor: pointer;
+            transition: background-color 0.15s;
+        }
+        #book-list tr.book-row:hover,
+        #book-list tr.book-row:focus-visible {
+            background: #e8f0fe;
+        }
+        #book-list tr.book-row:focus-visible {
+            outline: 2px solid var(--color-primary);
+            outline-offset: -2px;
+        }
+
+        /* Ảnh bìa nhỏ; khi sách chưa có ảnh hoặc ảnh lỗi thì hiện ô trống có chữ */
+        .book-cover,
+        .book-cover-empty {
+            display: block;
+            width: 48px;
+            height: 64px;
+            border: 1px solid var(--color-border);
+            border-radius: 4px;
+            background: var(--color-bg);
+        }
+        .book-cover {
+            object-fit: cover;
+        }
+        .book-cover-empty {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 2px;
+            font-size: 0.7rem;
+            line-height: 1.2;
+            text-align: center;
+            color: var(--color-muted);
+        }
+
+        /* Thanh phân trang */
+        .pagination {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+            margin-top: 16px;
+        }
+    </style>
+</head>
+<body>
+    <div id="header"></div>
+
+    <main class="container">
+        <h1 class="page-title">Danh sách sách</h1>
+
+        <!-- Ô tìm kiếm: tìm theo nhan đề, tác giả hoặc tên loại sách (list.js xử lý) -->
+        <form id="search-form" class="toolbar" role="search">
+            <input type="search" id="search-input" name="q" autocomplete="off"
+                   placeholder="Tìm theo nhan đề, tác giả hoặc loại sách" aria-label="Từ khóa tìm kiếm">
+            <button type="submit" class="btn btn-primary">Tìm kiếm</button>
+            <button type="button" class="btn btn-secondary hidden" id="btn-clear">Xóa tìm kiếm</button>
+        </form>
+
+        <!-- Thông báo: đang tải, lỗi (list.js tự bật/tắt) -->
+        <div id="message" class="alert hidden" role="alert"></div>
+
+        <!-- Dòng cho biết có bao nhiêu cuốn sách -->
+        <p id="result-info" class="text-muted hidden"></p>
+
+        <!-- Bảng danh sách: list.js thêm từng dòng vào #book-list -->
+        <div id="table-wrap" class="table-wrap hidden">
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>Ảnh bìa</th>
+                        <th>Nhan đề</th>
+                        <th>Tác giả</th>
+                        <th>Loại sách</th>
+                        <th class="text-right">Giá bìa</th>
+                        <th class="text-center">Số lượng</th>
+                    </tr>
+                </thead>
+                <tbody id="book-list"></tbody>
+            </table>
+        </div>
+
+        <!-- Phân trang: list.js chia danh sách thành từng trang 10 cuốn, chỉ hiện khi có hơn 1 trang -->
+        <div id="pagination" class="pagination hidden">
+            <button type="button" class="btn" id="btn-prev">Trước</button>
+            <span id="page-info" class="text-muted"></span>
+            <button type="button" class="btn" id="btn-next">Sau</button>
+        </div>
+
+        <!-- Hiện khi không có cuốn sách nào (chưa có sách hoặc tìm không thấy) -->
+        <div id="empty" class="empty hidden"></div>
+    </main>
+
+    <script src="/book-slim/public/assets/js/api.js"></script>
+    <script src="/book-slim/public/assets/js/list.js"></script>
+</body>
+</html>
