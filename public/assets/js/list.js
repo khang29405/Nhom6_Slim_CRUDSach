@@ -1,7 +1,7 @@
 // list.js - Trang danh sách và tìm kiếm (Thiện)
 //
 // Trang: /book-slim/public/books  (có thể kèm ?q=từ khóa)
-// Gọi getBooks(q) trong api.js (GET /api/books?q=...), theo đúng Hợp đồng API trong README.md:
+// Gọi getBooks(q) trong api.js (GET /api/books?q=...), theo đúng Hợp đồng API trong API.md:
 //   thành công: { data: [ { ma_dau_sach, nhan_de, tac_gia, ten_loai, gia_bia, so_luong, ... } ] }
 //   không có q thì API trả tất cả sách; có q thì tìm theo nhan đề, tác giả hoặc tên loại.
 //

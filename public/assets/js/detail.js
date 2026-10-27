@@ -1,7 +1,7 @@
 // detail.js - Trang chi tiết một cuốn sách
 //
 // Trang: /book-slim/public/books/{id}
-// Gọi getBook(id) trong api.js, theo đúng Hợp đồng API trong README.md:
+// Gọi getBook(id) trong api.js, theo đúng Hợp đồng API trong API.md:
 //   GET /api/books/{id}  -> 200 { data: { ma_dau_sach, nhan_de, tac_gia, ten_loai, gia_bia, ... } } hoặc 404 { error }
 //
 // Trong lúc tải hiện khung chờ; không tìm thấy sách hoặc lỗi thì hiện khối thông báo lỗi kèm nút về danh sách.

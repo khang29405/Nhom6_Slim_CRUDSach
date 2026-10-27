@@ -3,7 +3,7 @@
 // Dùng chung cho hai trang:
 //   /book-slim/public/books/create     -> chế độ THÊM  (gọi createBook)
 //   /book-slim/public/books/{id}/edit  -> chế độ SỬA   (gọi getBook rồi updateBook)
-// Chế độ thêm hay sửa được nhận biết từ location.pathname, theo đúng Hợp đồng API trong README.md.
+// Chế độ thêm hay sửa được nhận biết từ location.pathname, theo đúng Hợp đồng API trong API.md.
 //
 // Sau khi lưu thành công: hiện thông báo 1 giây rồi chuyển trang
 //   - thêm xong -> về trang danh sách

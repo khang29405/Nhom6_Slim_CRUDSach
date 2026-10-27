@@ -8,7 +8,7 @@
 // Các hàm KHÔNG ném lỗi khi gặp 4xx, trang tự xử lý theo status.
 //
 // Dữ liệu giả: khi một API của người khác chưa làm xong (server trả 501 "Chưa làm")
-// thì hàm tự trả dữ liệu giả đúng theo "Hợp đồng API" trong README.md.
+// thì hàm tự trả dữ liệu giả đúng theo "Hợp đồng API" trong API.md.
 // API thật xong thì không còn 501 nữa, dữ liệu giả tự không chạy.
 // Khi cả nhóm đã xong hết, đổi USE_MOCK bên dưới thành false (hoặc xóa phần "DỮ LIỆU GIẢ").
 //
