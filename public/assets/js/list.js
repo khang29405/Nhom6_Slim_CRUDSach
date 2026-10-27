@@ -91,6 +91,42 @@
         return img;
     }
 
+    // ===== Xóa sách =====
+
+    // Bấm nút Xóa trên một dòng: hỏi xác nhận bằng modal, đồng ý mới gọi deleteBook, xong báo kết quả bằng modal
+    async function confirmDelete(book) {
+        const answer = await Modal.confirm({
+            title: 'Xóa sách này?',
+            message: 'Bạn sắp xóa cuốn "' + book.nhan_de + '".\nSách đã xóa không thể khôi phục.',
+            confirmText: 'Xóa sách',
+            cancelText: 'Hủy',
+            danger: true,
+            onConfirm: function () { return deleteBook(book.ma_dau_sach); }
+        });
+        if (!answer.confirmed) return;
+
+        const res = answer.result;
+        if (res.ok) {
+            loadBooks(currentKeyword, currentPage);   // tải lại danh sách, giữ nguyên từ khóa và trang đang xem
+            await Modal.notice({
+                type: 'success',
+                title: 'Đã xóa sách',
+                message: (res.body && res.body.message) || 'Xóa sách thành công',
+                autoClose: 2000
+            });
+            return;
+        }
+
+        if (res.status === 404) {
+            loadBooks(currentKeyword, currentPage);   // sách đã bị xóa từ trước: làm mới danh sách
+        }
+        await Modal.notice({
+            type: 'error',
+            title: 'Không xóa được sách',
+            message: (res.body && res.body.error) || 'Có lỗi xảy ra, vui lòng thử lại'
+        });
+    }
+
     function createRow(book) {
         const tr = document.createElement('tr');
 
@@ -126,6 +162,24 @@
             tdQty.textContent = String(book.so_luong);
         }
         tr.appendChild(tdQty);
+
+                // Nút Xóa nằm cạnh cột số lượng. Chặn sự kiện nổi lên dòng để bấm Xóa không mở trang chi tiết.
+        const tdAction = document.createElement('td');
+        tdAction.className = 'text-center';
+        const btnDelete = document.createElement('button');
+        btnDelete.type = 'button';
+        btnDelete.className = 'btn btn-danger';
+        btnDelete.textContent = 'Xóa';
+        btnDelete.setAttribute('aria-label', 'Xóa sách ' + book.nhan_de);
+        btnDelete.addEventListener('click', function (e) {
+            e.stopPropagation();
+            confirmDelete(book);
+        });
+        btnDelete.addEventListener('keydown', function (e) {
+            e.stopPropagation();   // nhấn Enter trên nút Xóa không được mở trang chi tiết
+        });
+        tdAction.appendChild(btnDelete);
+        tr.appendChild(tdAction);
 
         return tr;
     }
