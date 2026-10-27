@@ -1,1 +1,405 @@
-<!-- detail.html - Trang chi tiết một cuốn sách (Hậu) -->
+<!-- detail.html - Trang chi tiết một cuốn sách -->
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Chi tiết sách</title>
+    <link rel="stylesheet" href="/book-slim/public/assets/css/style.css">
+
+    <!-- Giao diện riêng của trang chi tiết (đặt ở đây để không phải sửa style.css dùng chung) -->
+    <style>
+        /* Trang chi tiết rộng hơn khung chung (1000px) cho thoáng */
+        .container.detail-page {
+            max-width: 1120px;
+            padding-top: 28px;
+            padding-bottom: 48px;
+        }
+
+        /* Thanh menu rộng bằng nội dung trang để hai bên thẳng hàng */
+        .site-header .container {
+            max-width: 1120px;
+        }
+
+        /* ===== Đường dẫn phía trên ===== */
+        .breadcrumb {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            min-width: 0;
+            margin-bottom: 20px;
+            font-size: 0.95rem;
+            color: var(--color-muted);
+        }
+        .breadcrumb a {
+            white-space: nowrap;
+        }
+        .breadcrumb .crumb-current {
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+            color: var(--color-text);
+        }
+
+        /* ===== Bố cục chính: ảnh bìa lớn bên trái, thông tin bên phải ===== */
+        .detail {
+            display: grid;
+            grid-template-columns: 340px minmax(0, 1fr);
+            gap: 32px;
+            align-items: start;
+        }
+        .detail-cover-col {
+            position: sticky;
+            top: 24px;
+        }
+        .detail-cover {
+            overflow: hidden;
+            border: 1px solid var(--color-border);
+            border-radius: 12px;
+            background: var(--color-surface);
+            box-shadow: 0 10px 30px rgba(15, 23, 42, 0.14);
+        }
+        .detail-cover img {
+            display: block;
+            width: 100%;
+            aspect-ratio: 3 / 4;
+            object-fit: cover;
+        }
+        /* Khi sách chưa có ảnh hoặc ảnh lỗi */
+        .detail-cover-empty {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+            aspect-ratio: 3 / 4;
+            padding: 24px;
+            text-align: center;
+            color: var(--color-muted);
+            background: linear-gradient(160deg, #eef2f7, #e2e8f0);
+        }
+        .detail-cover-empty svg {
+            width: 56px;
+            height: 56px;
+            opacity: 0.7;
+        }
+
+        .detail-main {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            min-width: 0;
+        }
+        .detail-card {
+            padding: 28px 32px;
+            border: 1px solid var(--color-border);
+            border-radius: 12px;
+            background: var(--color-surface);
+            box-shadow: var(--shadow);
+        }
+
+        /* ===== Tiêu đề, tác giả, giá ===== */
+        .detail-category {
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 999px;
+            background: #dbeafe;
+            color: #1e3a8a;
+            font-size: 0.85rem;
+            font-weight: 600;
+        }
+        .detail-title {
+            margin: 12px 0 8px;
+            font-size: 2.1rem;
+            line-height: 1.25;
+            overflow-wrap: anywhere;
+        }
+        .detail-author {
+            margin: 0;
+            font-size: 1.1rem;
+            color: var(--color-muted);
+        }
+        .detail-author strong {
+            font-weight: 600;
+            color: var(--color-text);
+        }
+        .detail-buy {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            gap: 12px 16px;
+            margin: 24px 0;
+            padding: 18px 0;
+            border-top: 1px solid var(--color-border);
+            border-bottom: 1px solid var(--color-border);
+        }
+        .detail-price {
+            font-size: 2rem;
+            font-weight: 700;
+            line-height: 1.2;
+            color: var(--color-primary);
+        }
+        .detail-status {
+            padding: 5px 14px;
+            border-radius: 999px;
+            font-size: 0.9rem;
+            font-weight: 600;
+        }
+        .detail-status.in-stock {
+            background: #dcfce7;
+            color: #14532d;
+        }
+        .detail-status.out-of-stock {
+            background: #fef3c7;
+            color: var(--color-warning);
+        }
+
+        /* ===== Thông tin chi tiết dạng ô ===== */
+        .detail-facts {
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 12px;
+            margin: 0;
+        }
+        .detail-fact {
+            padding: 14px 16px;
+            border: 1px solid var(--color-border);
+            border-radius: var(--radius);
+            background: var(--color-bg);
+        }
+        .detail-fact dt {
+            margin: 0 0 4px;
+            font-size: 0.85rem;
+            color: var(--color-muted);
+        }
+        .detail-fact dd {
+            margin: 0;
+            font-size: 1.05rem;
+            font-weight: 600;
+            overflow-wrap: anywhere;
+        }
+        .is-empty {
+            font-style: italic;
+            color: var(--color-muted);
+        }
+        .detail-fact dd.is-empty {
+            font-weight: 400;
+        }
+
+        .detail-actions {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+            margin-top: 24px;
+        }
+        .detail-actions .btn {
+            padding: 11px 24px;
+            font-size: 1rem;
+        }
+
+        /* ===== Mô tả ===== */
+        .detail-section-title {
+            margin: 0 0 12px;
+            font-size: 1.3rem;
+        }
+        .detail-desc {
+            margin: 0;
+            font-size: 1.05rem;
+            line-height: 1.75;
+            white-space: pre-line;
+            overflow-wrap: anywhere;
+        }
+
+        /* ===== Khung chờ khi đang tải ===== */
+        .detail-skeleton {
+            display: grid;
+            grid-template-columns: 340px minmax(0, 1fr);
+            gap: 32px;
+        }
+        .sk {
+            border-radius: 8px;
+            background: linear-gradient(90deg, #e5e9ef 25%, #f1f4f8 37%, #e5e9ef 63%);
+            background-size: 400% 100%;
+            animation: sk-shimmer 1.4s ease infinite;
+        }
+        .sk-cover {
+            aspect-ratio: 3 / 4;
+            border-radius: 12px;
+        }
+        .sk-title {
+            width: 80%;
+            height: 38px;
+            margin-bottom: 20px;
+        }
+        .sk-line {
+            height: 18px;
+            margin-bottom: 14px;
+        }
+        .sk-w60 { width: 60%; }
+        .sk-w40 { width: 40%; }
+        @keyframes sk-shimmer {
+            0%   { background-position: 100% 50%; }
+            100% { background-position: 0 50%; }
+        }
+
+        /* ===== Khi không tìm thấy sách hoặc lỗi ===== */
+        .detail-state {
+            padding: 56px 24px;
+            border: 1px solid var(--color-border);
+            border-radius: 12px;
+            background: var(--color-surface);
+            box-shadow: var(--shadow);
+            text-align: center;
+        }
+        .detail-state-icon {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 64px;
+            height: 64px;
+            margin: 0 auto 16px;
+            border-radius: 50%;
+            background: #fee2e2;
+            color: var(--color-danger);
+        }
+        .detail-state-icon svg {
+            width: 30px;
+            height: 30px;
+        }
+        .detail-state h1 {
+            margin-bottom: 8px;
+            font-size: 1.5rem;
+        }
+        .detail-state p {
+            margin: 0 0 24px;
+            color: var(--color-muted);
+        }
+
+        /* ===== Màn hình nhỏ ===== */
+        @media (max-width: 860px) {
+            .detail,
+            .detail-skeleton {
+                grid-template-columns: 1fr;
+                gap: 20px;
+            }
+            .detail-cover-col,
+            .sk-cover {
+                position: static;
+                width: 100%;
+                max-width: 280px;
+                margin: 0 auto;
+            }
+            .detail-card {
+                padding: 20px;
+            }
+            .detail-title {
+                font-size: 1.6rem;
+            }
+            .detail-price {
+                font-size: 1.7rem;
+            }
+        }
+        @media (max-width: 480px) {
+            .detail-facts {
+                grid-template-columns: 1fr;
+            }
+            .detail-actions .btn {
+                flex: 1 1 auto;
+            }
+        }
+        @media (prefers-reduced-motion: reduce) {
+            .sk {
+                animation: none;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div id="header"></div>
+
+    <main class="container detail-page">
+        <nav class="breadcrumb" aria-label="Đường dẫn">
+            <a href="/book-slim/public/books">Danh sách sách</a>
+            <span aria-hidden="true">/</span>
+            <span class="crumb-current" id="crumb-title">Chi tiết sách</span>
+        </nav>
+
+        <!-- Khung chờ: hiện trong lúc tải, detail.js sẽ ẩn đi -->
+        <section id="detail-loading" class="detail-skeleton" aria-busy="true" aria-label="Đang tải thông tin sách">
+            <div class="sk sk-cover"></div>
+            <div>
+                <div class="sk sk-title"></div>
+                <div class="sk sk-line sk-w60"></div>
+                <div class="sk sk-line sk-w40"></div>
+                <div class="sk sk-line"></div>
+                <div class="sk sk-line"></div>
+                <div class="sk sk-line sk-w60"></div>
+            </div>
+        </section>
+
+        <!-- Không tìm thấy sách hoặc lỗi tải: detail.js điền nội dung và bật khối này -->
+        <section id="detail-error" class="detail-state hidden" role="alert">
+            <div class="detail-state-icon">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                    <circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/>
+                </svg>
+            </div>
+            <h1 id="error-title">Không tìm thấy sách</h1>
+            <p id="error-message"></p>
+            <a class="btn btn-primary" href="/book-slim/public/books">Về danh sách sách</a>
+        </section>
+
+        <!-- Khối chi tiết: ẩn cho đến khi tải xong dữ liệu sách (detail.js điền nội dung) -->
+        <article id="book-detail" class="detail hidden">
+            <div class="detail-cover-col">
+                <div class="detail-cover" id="detail-cover"></div>
+            </div>
+
+            <div class="detail-main">
+                <div class="detail-card">
+                    <span class="detail-category" id="book-category"></span>
+                    <h1 class="detail-title" id="book-title"></h1>
+                    <p class="detail-author">Tác giả: <strong id="book-author"></strong></p>
+
+                    <div class="detail-buy">
+                        <div class="detail-price" id="book-price"></div>
+                        <span class="detail-status" id="book-status"></span>
+                    </div>
+
+                    <dl class="detail-facts">
+                        <div class="detail-fact">
+                            <dt>Nhà xuất bản</dt>
+                            <dd id="book-publisher"></dd>
+                        </div>
+                        <div class="detail-fact">
+                            <dt>Số trang</dt>
+                            <dd id="book-pages"></dd>
+                        </div>
+                        <div class="detail-fact">
+                            <dt>Số lượng trong kho</dt>
+                            <dd id="book-stock"></dd>
+                        </div>
+                        <div class="detail-fact">
+                            <dt>Mã sách</dt>
+                            <dd id="book-id"></dd>
+                        </div>
+                    </dl>
+
+                    <div class="detail-actions">
+                        <a class="btn btn-primary" id="btn-edit" href="/book-slim/public/books">Sửa thông tin sách</a>
+                        <a class="btn btn-secondary" href="/book-slim/public/books">Quay lại danh sách</a>
+                    </div>
+                </div>
+
+                <div class="detail-card">
+                    <h2 class="detail-section-title">Giới thiệu sách</h2>
+                    <p class="detail-desc" id="book-desc"></p>
+                </div>
+            </div>
+        </article>
+    </main>
+
+    <script src="/book-slim/public/assets/js/api.js"></script>
+    <script src="/book-slim/public/assets/js/detail.js"></script>
+</body>
+</html>
